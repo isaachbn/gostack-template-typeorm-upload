@@ -26,8 +26,8 @@ class ImportTransactionsService {
     const csvFilePath = path.join(uploadConfig.directory, filename);
     const csvTransactions = await csv().fromFile(csvFilePath);
     const transactions = csvTransactions.reduce(
-      async (accumaldor, transaction: CsvTransaction) => {
-        await accumaldor;
+      async (accumulator, transaction: CsvTransaction) => {
+        await accumulator;
         return this.createTransactionService.execute({
           title: transaction.title,
           type: transaction.type,
