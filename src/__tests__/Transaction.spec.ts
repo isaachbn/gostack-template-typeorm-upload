@@ -1,6 +1,6 @@
 import request from 'supertest';
 import path from 'path';
-import { Connection, getRepository, getConnection } from 'typeorm';
+import { Connection, getRepository } from 'typeorm';
 import createConnection from '../database';
 
 import Transaction from '../models/Transaction';
@@ -22,7 +22,7 @@ describe('Transaction', () => {
   });
 
   afterAll(async () => {
-    const mainConnection = getConnection();
+    const mainConnection = connection;
 
     await connection.close();
     await mainConnection.close();
@@ -51,6 +51,7 @@ describe('Transaction', () => {
     });
 
     const response = await request(app).get('/transactions');
+    console.log(response.body);
 
     expect(response.body.transactions).toHaveLength(3);
     expect(response.body.balance).toMatchObject({
