@@ -25,9 +25,14 @@ class ImportTransactionsService {
   async execute({ filename }: UploadtRequest): Promise<Transaction[]> {
     const csvFilePath = path.join(uploadConfig.directory, filename);
     const csvTransactions = await csv().fromFile(csvFilePath);
-    const transactions = csvTransactions.reduce(
+    const transactions = [] as Transaction[];
+    const transactionCsv = await csvTransactions.reduce(
       async (accumulator, transaction: CsvTransaction) => {
-        await accumulator;
+        const transactionModel = await accumulator;
+
+        if (transactionModel instanceof Transaction)
+          transactions.push(transactionModel);
+
         return this.createTransactionService.execute({
           title: transaction.title,
           type: transaction.type,
@@ -42,6 +47,8 @@ class ImportTransactionsService {
     if (csvFileExists) {
       await fs.promises.unlink(csvFilePath);
     }
+
+    transactions.push(transactionCsv);
 
     return transactions;
   }
