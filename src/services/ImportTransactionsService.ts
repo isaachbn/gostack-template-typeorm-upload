@@ -26,7 +26,7 @@ class ImportTransactionsService {
     const csvFilePath = path.join(uploadConfig.directory, filename);
     const csvTransactions = await csv().fromFile(csvFilePath);
     const transactions = [] as Transaction[];
-    const transactionCsv = await csvTransactions.reduce(
+    const transactionLast = await csvTransactions.reduce(
       async (accumulator, transaction: CsvTransaction) => {
         const transactionModel = await accumulator;
 
@@ -42,13 +42,12 @@ class ImportTransactionsService {
       },
       Promise.resolve(),
     );
+    transactions.push(transactionLast);
     const csvFileExists = await fs.promises.stat(csvFilePath);
 
     if (csvFileExists) {
       await fs.promises.unlink(csvFilePath);
     }
-
-    transactions.push(transactionCsv);
 
     return transactions;
   }
